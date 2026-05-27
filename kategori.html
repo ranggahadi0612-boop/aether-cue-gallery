@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produk</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>Aether Cue Gallery</h1>
+    <div>
+        <a href="index.html">Beranda</a>
+        <a href="cart.html">Keranjang</a>
+    </div>
+</nav>
+
+<header class="hero">
+    <h2 id="judulKategori">Produk</h2>
+</header>
+
+<section class="products" id="produkContainer"></section>
+
+<script src="data.js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const kategori = params.get("kategori");
+
+document.getElementById("judulKategori").innerText =
+"Kategori: " + kategori;
+
+const container = document.getElementById("produkContainer");
+
+const hasil = produkData.filter(item => item.kategori === kategori);
+
+hasil.forEach(item => {
+    container.innerHTML += `
+        <div class="card">
+            <img src="${item.gambar}">
+            <h2>${item.nama}</h2>
+            <p>Rp ${item.harga.toLocaleString("id-ID")}</p>
+            <a href="detail.html?id=${item.id}">Lihat Detail</a>
+        </div>
+    `;
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>Aether Cue Gallery</h1>
+    <a href="index.html">Beranda</a>
+</nav>
+
+<header class="hero">
+    <h2>Keranjang Belanja</h2>
+</header>
+
+<section id="cartContainer"></section>
+
+<div class="total">
+    <h2 id="totalHarga"></h2>
+    <a href="https://wa.me/628xxxx">Checkout WhatsApp</a>
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let container = document.getElementById("cartContainer");
+let total = 0;
+let pesan = "Halo saya ingin checkout:%0A";
+
+cart.forEach((item, index) => {
+    total += item.harga * item.jumlah;
+
+    pesan += `- ${item.nama} x${item.jumlah}%0A`;
+
+    container.innerHTML += `
+        <div class="cart-item">
+            <img src="${item.gambar}">
+            <div>
+                <h2>${item.nama}</h2>
+                <p>Rp ${item.harga.toLocaleString("id-ID")}</p>
+
+                <button onclick="kurang(${index})">-</button>
+                <span>${item.jumlah}</span>
+               <button onclick="checkoutPesanan()" class="checkout-btn">
+    Checkout WhatsApp
+</button>
+            </div>
+        </div>
+    `;
+});
+
+document.getElementById("totalHarga").innerText =
+"Total: Rp " + total.toLocaleString("id-ID");
+
+document.getElementById("checkoutBtn").href =
+"https://wa.me/6281934785529?text=" + pesan;
+
+function tambah(index){
+    cart[index].jumlah++;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    location.reload();
+}
+
+function kurang(index){
+    if(cart[index].jumlah > 1){
+        cart[index].jumlah--;
+    }else{
+        cart.splice(index, 1);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    location.reload();
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+function checkoutPesanan(){
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if(cart.length === 0){
+        alert("Keranjang masih kosong");
+        return;
+    }
+
+    let total = 0;
+    let pesan = "Halo saya ingin checkout:%0A";
+
+    cart.forEach(item => {
+        total += item.harga * item.jumlah;
+        pesan += `- ${item.nama} x${item.jumlah}%0A`;
+    });
+
+    db.collection("pesanan").add({
+        produk: cart,
+        total: total,
+        waktu: new Date().toLocaleString("id-ID"),
+        status: "Pesanan Baru"
+    });
+
+    localStorage.removeItem("cart");
+
+    window.open(
+        "https://wa.me/6281934785529?text=" + pesan,
+        "_blank"
+    );
+}
+</script>
+</body>
+</html>

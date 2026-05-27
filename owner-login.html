@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Owner Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="owner-box">
+    <h2>Login Owner</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="loginOwner()">Masuk</button>
+</div>
+
+<script>
+function loginOwner(){
+    let user = document.getElementById("username").value;
+    let pass = document.getElementById("password").value;
+
+    if(user === "owner" && pass === "12345"){
+        localStorage.setItem("ownerLogin", "true");
+        window.location.href = "owner.html";
+    }else{
+        alert("Username atau password salah");
+    }
+}
+</script>
+<div class="owner-card">
+    <h2>Catatan Pesanan</h2>
+    <div id="daftarPesanan"></div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script>
+const daftar = document.getElementById("daftarPesanan");
+
+db.collection("pesanan")
+.orderBy("waktu", "desc")
+.onSnapshot(snapshot => {
+
+    daftar.innerHTML = "";
+
+    snapshot.forEach(doc => {
+
+        let data = doc.data();
+
+        let isiProduk = "";
+
+        data.produk.forEach(item => {
+            isiProduk += `
+                <p>
+                    ${item.nama} x${item.jumlah}
+                </p>
+            `;
+        });
+
+        daftar.innerHTML += `
+            <div class="pesanan-box">
+                <h3>${data.status}</h3>
+                <p>${data.waktu}</p>
+
+                ${isiProduk}
+
+                <h4>
+                    Total: Rp ${data.total.toLocaleString("id-ID")}
+                </h4>
+            </div>
+        `;
+    });
+});
+</script>
+</body>
+</html>

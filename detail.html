@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Produk</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>Aether Cue Gallery</h1>
+    <div>
+        <a href="index.html">Beranda</a>
+        <a href="cart.html">Keranjang</a>
+    </div>
+</nav>
+
+<section id="detailContainer"></section>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+const produk = produkData.find(item => item.id === id);
+
+document.getElementById("detailContainer").innerHTML = `
+    <div class="detail-page">
+        <img src="${produk.gambar}">
+
+        <div class="detail-info">
+            <h2>${produk.nama}</h2>
+            <h3>Rp ${produk.harga.toLocaleString("id-ID")}</h3>
+
+            <h4>Spesifikasi Produk:</h4>
+
+            <ul>
+                ${produk.spesifikasi.map(spek => `<li>${spek}</li>`).join("")}
+            </ul>
+
+            <button onclick="tambahKeranjang(
+                '${produk.nama}',
+                ${produk.harga},
+                '${produk.gambar}'
+            )">
+                Tambah ke Keranjang
+            </button>
+        </div>
+    </div>
+`;
+</script>
+
+</body>
+</html>
