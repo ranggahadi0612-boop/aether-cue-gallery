@@ -1,10 +1,10 @@
 var firebaseConfig = {
-  apiKey: "ISI_DARI_FIREBASE",
+  apiKey: "PASTE_APIKEY_ASLI",
   authDomain: "aether-cue-gallery.firebaseapp.com",
   projectId: "aether-cue-gallery",
   storageBucket: "aether-cue-gallery.firebasestorage.app",
   messagingSenderId: "957870196198",
-  appId: "ISI_DARI_FIREBASE"
+  appId: "PASTE_APPID_ASLI"
 };
 
 if (!firebase.apps.length) {
