@@ -21,8 +21,12 @@
 
 <div class="total">
     <h2 id="totalHarga"></h2>
-    <a href="https://wa.me/628xxxx">Checkout WhatsApp</a>
+    <button onclick="checkoutPesanan()" class="checkout-btn">Checkout WhatsApp</button>
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 
 <script>
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -30,33 +34,37 @@ let container = document.getElementById("cartContainer");
 let total = 0;
 let pesan = "Halo saya ingin checkout:%0A";
 
-cart.forEach((item, index) => {
-    total += item.harga * item.jumlah;
+function tampilCart(){
+    container.innerHTML = "";
+    total = 0;
+    pesan = "Halo saya ingin checkout:%0A";
 
-    pesan += `- ${item.nama} x${item.jumlah}%0A`;
+    if(cart.length === 0){
+        container.innerHTML = "<h2 style='padding:30px'>Keranjang masih kosong</h2>";
+    }
 
-    container.innerHTML += `
-        <div class="cart-item">
-            <img src="${item.gambar}">
-            <div>
-                <h2>${item.nama}</h2>
-                <p>Rp ${item.harga.toLocaleString("id-ID")}</p>
+    cart.forEach((item, index) => {
+        total += item.harga * item.jumlah;
+        pesan += `- ${item.nama} x${item.jumlah}%0A`;
 
-                <button onclick="kurang(${index})">-</button>
-                <span>${item.jumlah}</span>
-               <button onclick="checkoutPesanan()" class="checkout-btn">
-    Checkout WhatsApp
-</button>
+        container.innerHTML += `
+            <div class="cart-item">
+                <img src="${item.gambar}">
+                <div>
+                    <h2>${item.nama}</h2>
+                    <p>Rp ${item.harga.toLocaleString("id-ID")}</p>
+
+                    <button onclick="kurang(${index})">-</button>
+                    <span>${item.jumlah}</span>
+                    <button onclick="tambah(${index})">+</button>
+                </div>
             </div>
-        </div>
-    `;
-});
+        `;
+    });
 
-document.getElementById("totalHarga").innerText =
-"Total: Rp " + total.toLocaleString("id-ID");
-
-document.getElementById("checkoutBtn").href =
-"https://wa.me/6281934785529?text=" + pesan;
+    document.getElementById("totalHarga").innerText =
+    "Total: Rp " + total.toLocaleString("id-ID");
+}
 
 function tambah(index){
     cart[index].jumlah++;
@@ -74,45 +82,31 @@ function kurang(index){
     localStorage.setItem("cart", JSON.stringify(cart));
     location.reload();
 }
-</script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-<script>
+
 function checkoutPesanan(){
-
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     if(cart.length === 0){
         alert("Keranjang masih kosong");
         return;
     }
-
-    let total = 0;
-    let pesan = "Halo saya ingin checkout:%0A";
-
-    cart.forEach(item => {
-        total += item.harga * item.jumlah;
-        pesan += `- ${item.nama} x${item.jumlah}%0A`;
-    });
 
     db.collection("pesanan").add({
         produk: cart,
         total: total,
         waktu: new Date().toLocaleString("id-ID"),
         status: "Pesanan Baru"
+    }).then(() => {
+        localStorage.removeItem("cart");
+        window.open(
+            "https://wa.me/6281934785529?text=" + pesan,
+            "_blank"
+        );
+    }).catch(error => {
+        alert("Gagal checkout: " + error.message);
     });
-
-    localStorage.removeItem("cart");
-
-    window.open(
-        "https://wa.me/6281934785529?text=" + pesan,
-        "_blank"
-    );
 }
+
+tampilCart();
 </script>
+
 </body>
 </html>

@@ -17,6 +17,7 @@
 </nav>
 
 <section id="detailContainer"></section>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
@@ -26,32 +27,44 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-const produk = produkData.find(item => item.id === id);
+db.collection("produk").doc(id).get().then(doc => {
+    if(!doc.exists){
+        document.getElementById("detailContainer").innerHTML =
+        "<h2 style='padding:40px'>Produk tidak ditemukan</h2>";
+        return;
+    }
 
-document.getElementById("detailContainer").innerHTML = `
-    <div class="detail-page">
-        <img src="${produk.gambar}">
+    let produk = doc.data();
+    let spesifikasi = Array.isArray(produk.spesifikasi) ? produk.spesifikasi : [];
 
-        <div class="detail-info">
-            <h2>${produk.nama}</h2>
-            <h3>Rp ${produk.harga.toLocaleString("id-ID")}</h3>
+    document.getElementById("detailContainer").innerHTML = `
+        <div class="detail-page">
+            <img src="${produk.gambar}">
 
-            <h4>Spesifikasi Produk:</h4>
+            <div class="detail-info">
+                <h2>${produk.nama}</h2>
+                <h3>Rp ${Number(produk.harga).toLocaleString("id-ID")}</h3>
 
-            <ul>
-                ${produk.spesifikasi.map(spek => `<li>${spek}</li>`).join("")}
-            </ul>
+                <h4>Spesifikasi Produk:</h4>
 
-            <button onclick="tambahKeranjang(
-                '${produk.nama}',
-                ${produk.harga},
-                '${produk.gambar}'
-            )">
-                Tambah ke Keranjang
-            </button>
+                <ul>
+                    ${spesifikasi.map(spek => `<li>${spek}</li>`).join("")}
+                </ul>
+
+                <button onclick="tambahKeranjang(
+                    '${produk.nama.replace(/'/g, "\\'")}',
+                    ${Number(produk.harga)},
+                    '${produk.gambar.replace(/'/g, "\\'")}'
+                )">
+                    Tambah ke Keranjang
+                </button>
+            </div>
         </div>
-    </div>
-`;
+    `;
+}).catch(error => {
+    document.getElementById("detailContainer").innerHTML =
+    "<h2 style='padding:40px'>Gagal membuka detail: " + error.message + "</h2>";
+});
 </script>
 
 </body>

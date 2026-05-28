@@ -21,11 +21,10 @@
 </header>
 
 <section class="products" id="produkContainer"></section>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-
-
 
 <script>
 const params = new URLSearchParams(window.location.search);
@@ -36,21 +35,32 @@ document.getElementById("judulKategori").innerText =
 
 const container = document.getElementById("produkContainer");
 
-const hasil = produkData.filter(item => item.kategori === kategori);
+db.collection("produk")
+.where("kategori", "==", kategori)
+.onSnapshot(snapshot => {
+    container.innerHTML = "";
 
-hasil.forEach(item => {
-    container.innerHTML += `
-        <div class="card">
-            <img src="${item.gambar}">
-            <h2>${item.nama}</h2>
-            <p>Rp ${item.harga.toLocaleString("id-ID")}</p>
-            <a href="detail.html?id=${item.id}">Lihat Detail</a>
-        </div>
-    `;
+    if(snapshot.empty){
+        container.innerHTML = "<h2>Produk belum tersedia</h2>";
+        return;
+    }
+
+    snapshot.forEach(doc => {
+        let item = doc.data();
+
+        container.innerHTML += `
+            <div class="card">
+                <img src="${item.gambar}">
+                <h2>${item.nama}</h2>
+                <p>Rp ${Number(item.harga).toLocaleString("id-ID")}</p>
+                <a href="detail.html?id=${doc.id}">Lihat Detail</a>
+            </div>
+        `;
+    });
+}, error => {
+    container.innerHTML = "<h2>Gagal mengambil produk: " + error.message + "</h2>";
 });
-
 </script>
-
 
 </body>
 </html>
