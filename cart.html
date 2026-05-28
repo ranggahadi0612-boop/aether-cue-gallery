@@ -44,15 +44,15 @@ function tampilCart(){
     }
 
     cart.forEach((item, index) => {
-        total += item.harga * item.jumlah;
+        total += Number(item.harga) * Number(item.jumlah);
         pesan += `- ${item.nama} x${item.jumlah}%0A`;
 
         container.innerHTML += `
             <div class="cart-item">
-                <img src="${item.gambar}">
+                <img src="${item.gambar}" onerror="this.src='https://via.placeholder.com/140x100?text=No+Image'">
                 <div>
                     <h2>${item.nama}</h2>
-                    <p>Rp ${item.harga.toLocaleString("id-ID")}</p>
+                    <p>Rp ${Number(item.harga).toLocaleString("id-ID")}</p>
 
                     <button onclick="kurang(${index})">-</button>
                     <span>${item.jumlah}</span>

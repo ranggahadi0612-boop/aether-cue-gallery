@@ -759,3 +759,15 @@ transform:translateX(-50%);
     object-fit:cover;
     border-radius:10px;
 }
+.checkout-btn{
+    display:inline-block;
+    margin-top:20px;
+    background:#00ffcc;
+    color:black;
+    padding:15px 30px;
+    border-radius:12px;
+    border:none;
+    text-decoration:none;
+    font-weight:bold;
+    cursor:pointer;
+}

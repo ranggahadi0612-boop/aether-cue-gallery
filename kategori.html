@@ -28,12 +28,13 @@
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const kategori = params.get("kategori");
+const kategori = params.get("kategori") || "meja";
 
 document.getElementById("judulKategori").innerText =
 "Kategori: " + kategori;
 
 const container = document.getElementById("produkContainer");
+container.innerHTML = "<h2>Memuat produk...</h2>";
 
 db.collection("produk")
 .where("kategori", "==", kategori)
@@ -50,9 +51,9 @@ db.collection("produk")
 
         container.innerHTML += `
             <div class="card">
-                <img src="${item.gambar}">
-                <h2>${item.nama}</h2>
-                <p>Rp ${Number(item.harga).toLocaleString("id-ID")}</p>
+                <img src="${item.gambar}" onerror="this.src='https://via.placeholder.com/300x180?text=No+Image'">
+                <h2>${item.nama || "-"}</h2>
+                <p>Rp ${Number(item.harga || 0).toLocaleString("id-ID")}</p>
                 <a href="detail.html?id=${doc.id}">Lihat Detail</a>
             </div>
         `;

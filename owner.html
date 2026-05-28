@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <script src="firebase-config.js"></script>
+
 <script>
 if(localStorage.getItem("ownerLogin") !== "true"){
     window.location.href = "owner-login.html";
@@ -21,7 +21,7 @@ if(localStorage.getItem("ownerLogin") !== "true"){
     <div class="logo-3d">OWNER PANEL</div>
     <div class="nav-icons">
         <a href="index.html">🏠</a>
-        <a onclick="logoutOwner()">🚪</a>
+        <a href="#" onclick="logoutOwner()">🚪</a>
     </div>
 </nav>
 
@@ -34,7 +34,7 @@ if(localStorage.getItem("ownerLogin") !== "true"){
         <input type="hidden" id="produkId">
         <input type="text" id="namaProduk" placeholder="Nama produk">
         <input type="number" id="hargaProduk" placeholder="Harga produk, contoh: 1500000">
-        <input type="text" id="gambarProduk" placeholder="Link gambar / images/foto.jpg">
+        <input type="text" id="gambarProduk" placeholder="Link gambar, contoh: https://website.com/foto.jpg">
 
         <select id="kategoriProduk">
             <option value="meja">Meja Billiard</option>
@@ -45,20 +45,18 @@ if(localStorage.getItem("ownerLogin") !== "true"){
 
         <textarea id="spekProduk" placeholder="Spesifikasi, pisahkan dengan koma"></textarea>
 
-        <button type="button" id="btnSimpanProduk">
-    Simpan Produk
-</button>
-        <button onclick="resetFormProduk()">Reset Form</button>
+        <button type="button" id="btnSimpanProduk">Simpan Produk</button>
+        <button type="button" onclick="resetFormProduk()">Reset Form</button>
     </div>
 
     <div class="owner-card">
         <h2>Daftar Produk</h2>
-        <div id="daftarProdukOwner"></div>
+        <div id="daftarProdukOwner">Memuat produk...</div>
     </div>
 
     <div class="owner-card">
         <h2>Catatan Pesanan</h2>
-        <div id="daftarPesanan"></div>
+        <div id="daftarPesanan">Memuat pesanan...</div>
     </div>
 
     <div class="owner-card">
@@ -72,13 +70,7 @@ function logoutOwner(){
     localStorage.removeItem("ownerLogin");
     window.location.href = "owner-login.html";
 }
-</script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
-
-<script>
 function resetFormProduk(){
     document.getElementById("produkId").value = "";
     document.getElementById("namaProduk").value = "";
@@ -88,48 +80,52 @@ function resetFormProduk(){
     document.getElementById("spekProduk").value = "";
 }
 
-function tampilProdukOwner(){
-    let id = document.getElementById("produkId").value;
-    let nama = document.getElementById("namaProduk").value;
+document.getElementById("btnSimpanProduk").addEventListener("click", function(){
+    let id = document.getElementById("produkId").value.trim();
+    let nama = document.getElementById("namaProduk").value.trim();
     let harga = Number(document.getElementById("hargaProduk").value);
-    let gambar = document.getElementById("gambarProduk").value;
+    let gambar = document.getElementById("gambarProduk").value.trim();
     let kategori = document.getElementById("kategoriProduk").value;
-    let spek = document.getElementById("spekProduk").value;
+    let spek = document.getElementById("spekProduk").value.trim();
 
-    if(nama === "" || harga === 0 || gambar === "" || spek === ""){
-        alert("Semua kolom harus diisi");
+    if(nama === "" || harga <= 0 || gambar === "" || spek === ""){
+        alert("Nama, harga, gambar, dan spesifikasi wajib diisi.");
         return;
     }
 
-    let spesifikasi = spek.split(",").map(item => item.trim());
+    let spesifikasi = spek.split(",").map(item => item.trim()).filter(item => item !== "");
 
     let dataProduk = {
         nama: nama,
         harga: harga,
         gambar: gambar,
         kategori: kategori,
-        spesifikasi: spesifikasi
+        spesifikasi: spesifikasi,
+        diperbaruiPada: new Date()
     };
 
-    db.collection("produk").add(dataProduk)
-    .then(() => {
-        alert("Produk berhasil disimpan");
+    let proses;
 
-        document.getElementById("produkId").value = "";
-        document.getElementById("namaProduk").value = "";
-        document.getElementById("hargaProduk").value = "";
-        document.getElementById("gambarProduk").value = "";
-        document.getElementById("spekProduk").value = "";
-    })
-    .catch((error) => {
+    if(id){
+        proses = db.collection("produk").doc(id).update(dataProduk);
+    }else{
+        dataProduk.dibuatPada = new Date();
+        proses = db.collection("produk").add(dataProduk);
+    }
+
+    proses.then(() => {
+        alert(id ? "Produk berhasil diedit" : "Produk berhasil ditambahkan");
+        resetFormProduk();
+    }).catch(error => {
         alert("Gagal menyimpan produk: " + error.message);
         console.log(error);
     });
-}
+});
 
 function tampilProdukOwner(){
+    let container = document.getElementById("daftarProdukOwner");
+
     db.collection("produk").onSnapshot(snapshot => {
-        let container = document.getElementById("daftarProdukOwner");
         container.innerHTML = "";
 
         if(snapshot.empty){
@@ -142,21 +138,19 @@ function tampilProdukOwner(){
 
             container.innerHTML += `
                 <div class="owner-product">
-                    <img src="${item.gambar}">
+                    <img src="${item.gambar}" onerror="this.src='https://via.placeholder.com/120x90?text=No+Image'">
                     <div>
-                        <h3>${item.nama}</h3>
-                        <p>Rp ${Number(item.harga).toLocaleString("id-ID")}</p>
-                        <p>Kategori: ${item.kategori}</p>
-
-                        <button onclick="editProduk('${doc.id}')">Edit</button>
-                        <button onclick="hapusProduk('${doc.id}')">Hapus</button>
+                        <h3>${item.nama || "-"}</h3>
+                        <p>Rp ${Number(item.harga || 0).toLocaleString("id-ID")}</p>
+                        <p>Kategori: ${item.kategori || "-"}</p>
+                        <button type="button" onclick="editProduk('${doc.id}')">Edit</button>
+                        <button type="button" onclick="hapusProduk('${doc.id}')">Hapus</button>
                     </div>
                 </div>
             `;
         });
     }, error => {
-        document.getElementById("daftarProdukOwner").innerHTML =
-        "<p>Gagal mengambil produk: " + error.message + "</p>";
+        container.innerHTML = "<p>Gagal mengambil produk: " + error.message + "</p>";
     });
 }
 
@@ -170,14 +164,16 @@ function editProduk(id){
         let item = doc.data();
 
         document.getElementById("produkId").value = id;
-        document.getElementById("namaProduk").value = item.nama;
-        document.getElementById("hargaProduk").value = item.harga;
-        document.getElementById("gambarProduk").value = item.gambar;
-        document.getElementById("kategoriProduk").value = item.kategori;
+        document.getElementById("namaProduk").value = item.nama || "";
+        document.getElementById("hargaProduk").value = item.harga || 0;
+        document.getElementById("gambarProduk").value = item.gambar || "";
+        document.getElementById("kategoriProduk").value = item.kategori || "meja";
         document.getElementById("spekProduk").value =
         Array.isArray(item.spesifikasi) ? item.spesifikasi.join(", ") : "";
 
-        window.scrollTo({top:0, behavior:"smooth"});
+        window.scrollTo({top: 0, behavior: "smooth"});
+    }).catch(error => {
+        alert("Gagal membuka data produk: " + error.message);
     });
 }
 
@@ -219,6 +215,8 @@ function tampilPesananOwner(){
                 </div>
             `;
         });
+    }, error => {
+        daftar.innerHTML = "<p>Gagal mengambil pesanan: " + error.message + "</p>";
     });
 }
 

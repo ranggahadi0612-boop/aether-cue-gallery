@@ -27,44 +27,53 @@
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-db.collection("produk").doc(id).get().then(doc => {
-    if(!doc.exists){
-        document.getElementById("detailContainer").innerHTML =
-        "<h2 style='padding:40px'>Produk tidak ditemukan</h2>";
-        return;
-    }
-
-    let produk = doc.data();
-    let spesifikasi = Array.isArray(produk.spesifikasi) ? produk.spesifikasi : [];
-
-    document.getElementById("detailContainer").innerHTML = `
-        <div class="detail-page">
-            <img src="${produk.gambar}">
-
-            <div class="detail-info">
-                <h2>${produk.nama}</h2>
-                <h3>Rp ${Number(produk.harga).toLocaleString("id-ID")}</h3>
-
-                <h4>Spesifikasi Produk:</h4>
-
-                <ul>
-                    ${spesifikasi.map(spek => `<li>${spek}</li>`).join("")}
-                </ul>
-
-                <button onclick="tambahKeranjang(
-                    '${produk.nama.replace(/'/g, "\\'")}',
-                    ${Number(produk.harga)},
-                    '${produk.gambar.replace(/'/g, "\\'")}'
-                )">
-                    Tambah ke Keranjang
-                </button>
-            </div>
-        </div>
-    `;
-}).catch(error => {
+if(!id){
     document.getElementById("detailContainer").innerHTML =
-    "<h2 style='padding:40px'>Gagal membuka detail: " + error.message + "</h2>";
-});
+    "<h2 style='padding:40px'>ID produk tidak ditemukan</h2>";
+}else{
+    db.collection("produk").doc(id).get().then(doc => {
+        if(!doc.exists){
+            document.getElementById("detailContainer").innerHTML =
+            "<h2 style='padding:40px'>Produk tidak ditemukan</h2>";
+            return;
+        }
+
+        let produk = doc.data();
+        let spesifikasi = Array.isArray(produk.spesifikasi) ? produk.spesifikasi : [];
+
+        let namaAman = String(produk.nama || "").replace(/'/g, "\\'");
+        let gambarAman = String(produk.gambar || "").replace(/'/g, "\\'");
+        let hargaAman = Number(produk.harga || 0);
+
+        document.getElementById("detailContainer").innerHTML = `
+            <div class="detail-page">
+                <img src="${produk.gambar}" onerror="this.src='https://via.placeholder.com/450x350?text=No+Image'">
+
+                <div class="detail-info">
+                    <h2>${produk.nama || "-"}</h2>
+                    <h3>Rp ${hargaAman.toLocaleString("id-ID")}</h3>
+
+                    <h4>Spesifikasi Produk:</h4>
+
+                    <ul>
+                        ${spesifikasi.map(spek => `<li>${spek}</li>`).join("")}
+                    </ul>
+
+                    <button onclick="tambahKeranjang(
+                        '${namaAman}',
+                        ${hargaAman},
+                        '${gambarAman}'
+                    )">
+                        Tambah ke Keranjang
+                    </button>
+                </div>
+            </div>
+        `;
+    }).catch(error => {
+        document.getElementById("detailContainer").innerHTML =
+        "<h2 style='padding:40px'>Gagal membuka detail: " + error.message + "</h2>";
+    });
+}
 </script>
 
 </body>

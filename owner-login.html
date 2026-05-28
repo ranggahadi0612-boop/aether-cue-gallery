@@ -29,51 +29,6 @@ function loginOwner(){
     }
 }
 </script>
-<div class="owner-card">
-    <h2>Catatan Pesanan</h2>
-    <div id="daftarPesanan"></div>
-</div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
 
-<script>
-const daftar = document.getElementById("daftarPesanan");
-
-db.collection("pesanan")
-.orderBy("waktu", "desc")
-.onSnapshot(snapshot => {
-
-    daftar.innerHTML = "";
-
-    snapshot.forEach(doc => {
-
-        let data = doc.data();
-
-        let isiProduk = "";
-
-        data.produk.forEach(item => {
-            isiProduk += `
-                <p>
-                    ${item.nama} x${item.jumlah}
-                </p>
-            `;
-        });
-
-        daftar.innerHTML += `
-            <div class="pesanan-box">
-                <h3>${data.status}</h3>
-                <p>${data.waktu}</p>
-
-                ${isiProduk}
-
-                <h4>
-                    Total: Rp ${data.total.toLocaleString("id-ID")}
-                </h4>
-            </div>
-        `;
-    });
-});
-</script>
 </body>
 </html>

@@ -9,7 +9,7 @@ function tambahKeranjang(nama, harga, gambar){
     }else{
         cart.push({
             nama: nama,
-            harga: harga,
+            harga: Number(harga),
             gambar: gambar,
             jumlah: 1
         });
