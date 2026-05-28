@@ -6,7 +6,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="firebase-config.js"></script>
 <script>
 if(localStorage.getItem("ownerLogin") !== "true"){
     window.location.href = "owner-login.html";
@@ -41,7 +45,9 @@ if(localStorage.getItem("ownerLogin") !== "true"){
 
         <textarea id="spekProduk" placeholder="Spesifikasi, pisahkan dengan koma"></textarea>
 
-        <button onclick="simpanProduk()">Simpan Produk</button>
+        <button type="button" id="btnSimpanProduk">
+    Simpan Produk
+</button>
         <button onclick="resetFormProduk()">Reset Form</button>
     </div>
 
@@ -82,7 +88,7 @@ function resetFormProduk(){
     document.getElementById("spekProduk").value = "";
 }
 
-function simpanProduk(){
+function tampilProdukOwner(){
     let id = document.getElementById("produkId").value;
     let nama = document.getElementById("namaProduk").value;
     let harga = Number(document.getElementById("hargaProduk").value);
@@ -219,11 +225,6 @@ function tampilPesananOwner(){
 tampilProdukOwner();
 tampilPesananOwner();
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<script src="firebase-config.js"></script>
-</script>
 </body>
 </html>
