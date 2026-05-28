@@ -1,10 +1,10 @@
 var firebaseConfig = {
-  apiKey: "ISI_API_KEY_KAMU",
-  authDomain: "ISI_AUTH_DOMAIN_KAMU",
-  projectId: "ISI_PROJECT_ID_KAMU",
-  storageBucket: "ISI_STORAGE_BUCKET_KAMU",
-  messagingSenderId: "ISI_MESSAGING_ID_KAMU",
-  appId: "ISI_APP_ID_KAMU"
+  apiKey: "ISI_DARI_FIREBASE",
+  authDomain: "aether-cue-gallery.firebaseapp.com",
+  projectId: "aether-cue-gallery",
+  storageBucket: "aether-cue-gallery.firebasestorage.app",
+  messagingSenderId: "957870196198",
+  appId: "ISI_DARI_FIREBASE"
 };
 
 if (!firebase.apps.length) {
