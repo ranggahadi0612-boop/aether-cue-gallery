@@ -83,48 +83,42 @@ function resetFormProduk(){
 }
 
 function simpanProduk(){
-    let id = document.getElementById("produkId").value.trim();
-    let nama = document.getElementById("namaProduk").value.trim();
+    let id = document.getElementById("produkId").value;
+    let nama = document.getElementById("namaProduk").value;
     let harga = Number(document.getElementById("hargaProduk").value);
-    let gambar = document.getElementById("gambarProduk").value.trim();
+    let gambar = document.getElementById("gambarProduk").value;
     let kategori = document.getElementById("kategoriProduk").value;
-    let spek = document.getElementById("spekProduk").value.trim();
+    let spek = document.getElementById("spekProduk").value;
 
-    if(nama === "" || harga <= 0 || gambar === "" || spek === ""){
-        alert("Nama, harga, gambar, dan spesifikasi wajib diisi.");
+    if(nama === "" || harga === 0 || gambar === "" || spek === ""){
+        alert("Semua kolom harus diisi");
         return;
     }
 
-    let spesifikasi = spek.split(",").map(item => item.trim()).filter(item => item !== "");
+    let spesifikasi = spek.split(",").map(item => item.trim());
 
     let dataProduk = {
         nama: nama,
         harga: harga,
         gambar: gambar,
         kategori: kategori,
-        spesifikasi: spesifikasi,
-        dibuatPada: new Date()
+        spesifikasi: spesifikasi
     };
 
-    if(id){
-        db.collection("produk").doc(id).update(dataProduk)
-        .then(() => {
-            alert("Produk berhasil diedit");
-            resetFormProduk();
-        })
-        .catch(error => {
-            alert("Gagal edit produk: " + error.message);
-        });
-    }else{
-        db.collection("produk").add(dataProduk)
-        .then(() => {
-            alert("Produk berhasil ditambahkan");
-            resetFormProduk();
-        })
-        .catch(error => {
-            alert("Gagal tambah produk: " + error.message);
-        });
-    }
+    db.collection("produk").add(dataProduk)
+    .then(() => {
+        alert("Produk berhasil disimpan");
+
+        document.getElementById("produkId").value = "";
+        document.getElementById("namaProduk").value = "";
+        document.getElementById("hargaProduk").value = "";
+        document.getElementById("gambarProduk").value = "";
+        document.getElementById("spekProduk").value = "";
+    })
+    .catch((error) => {
+        alert("Gagal menyimpan produk: " + error.message);
+        console.log(error);
+    });
 }
 
 function tampilProdukOwner(){
