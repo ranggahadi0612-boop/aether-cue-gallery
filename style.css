@@ -771,3 +771,45 @@ transform:translateX(-50%);
     font-weight:bold;
     cursor:pointer;
 }
+body{
+    background:
+    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.9)),
+    url("images/bg-billiard.png");
+    background-size:120%;
+    background-position:center;
+    background-attachment:fixed;
+    animation:bgJalan 18s ease-in-out infinite alternate;
+}
+
+@keyframes bgJalan{
+    from{
+        background-position:center top;
+        background-size:120%;
+    }
+
+    to{
+        background-position:center bottom;
+        background-size:135%;
+    }
+}
+body{
+    background:
+    linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)),
+    url("images/bg-billiard.png");
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+    animation: bgGerak 15s ease-in-out infinite alternate;
+}
+
+@keyframes bgGerak{
+    from{
+        background-position: center top;
+    }
+
+    to{
+        background-position: center bottom;
+    }
+}
